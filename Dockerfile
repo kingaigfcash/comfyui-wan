@@ -91,7 +91,6 @@ RUN for repo in \
     https://github.com/vrgamegirl19/comfyui-vrgamedevgirl.git \
     https://github.com/TinyTerra/ComfyUI_tinyterraNodes.git \
     https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git \
-    https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \
