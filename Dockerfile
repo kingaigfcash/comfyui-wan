@@ -34,6 +34,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install packaging setuptools wheel
 
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install cmake scikit-build-core && \
+    pip install --no-build-isolation flash-attn
+
 # Runtime libraries
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install pyyaml gdown triton comfy-cli jupyterlab jupyterlab-lsp \

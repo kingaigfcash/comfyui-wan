@@ -1,0 +1,1 @@
+[![Runpod](https://api.runpod.io/badge/kingaigfcash/comfyui-wan)](https://console.runpod.io/hub/kingaigfcash/comfyui-wan)
