@@ -303,6 +303,9 @@ download_model "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/reso
 download_model "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/open-clip-xlm-roberta-large-vit-huge-14_visual_fp16.safetensors" "$TEXT_ENCODERS_DIR/open-clip-xlm-roberta-large-vit-huge-14_visual_fp16.safetensors"
 
 download_model "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/umt5-xxl-enc-bf16.safetensors" "$TEXT_ENCODERS_DIR/umt5-xxl-enc-bf16.safetensors"
+download_model "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors" "$TEXT_ENCODERS_DIR/clip_l.safetensors"
+
+download_model "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors" "$TEXT_ENCODERS_DIR/t5xxl_fp8_e4m3fn.safetensors"
 
 # Create CLIP vision directory and download models
 mkdir -p "$CLIP_VISION_DIR"
@@ -313,6 +316,11 @@ echo "Downloading VAE..."
 download_model "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_bf16.safetensors" "$VAE_DIR/Wan2_1_VAE_bf16.safetensors"
 
 download_model "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors" "$VAE_DIR/wan_2.1_vae.safetensors"
+
+download_model "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" "$VAE_DIR/ae.safetensors"
+
+echo "Downloading Flux.1 Dev diffusion model"
+download_model "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors" "$DIFFUSION_MODELS_DIR/flux1-dev.safetensors"
 
 # Download detection models for WanAnimatePreprocess
 echo "Downloading detection models..."
@@ -384,6 +392,19 @@ else
     echo "4xLSDIR.pth already exists. Skipping."
 fi
 
+mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
+if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-SuperUltraCompact.pth" ]; then
+    if [ -f "/1xSkinContrast-SuperUltraCompact.pth" ]; then
+        mv "/1xSkinContrast-SuperUltraCompact.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-SuperUltraCompact.pth"
+        echo "Moved 1xSkinContrast-SuperUltraCompact.pth to the correct location."
+    else
+        echo "1xSkinContrast-SuperUltraCompact.pth not found in the root directory."
+    fi
+else
+    echo "1xSkinContrast-SuperUltraCompact.pth already exists. Skipping."
+fi
+
+mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
 if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth" ]; then
     if [ -f "/4xNomosWebPhoto_esrgan.pth" ]; then
         mv "/4xNomosWebPhoto_esrgan.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth"
