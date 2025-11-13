@@ -384,6 +384,17 @@ else
     echo "4xLSDIR.pth already exists. Skipping."
 fi
 
+if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth" ]; then
+    if [ -f "/4xNomosWebPhoto_esrgan.pth" ]; then
+        mv "/4xNomosWebPhoto_esrgan.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth"
+        echo "Moved 4xNomosWebPhoto_esrgan.pth to the correct location."
+    else
+        echo "4xNomosWebPhoto_esrgan.pth not found in the root directory."
+    fi
+else
+    echo "4xNomosWebPhoto_esrgan.pth already exists. Skipping."
+fi
+
 echo "Finished downloading models!"
 
 
