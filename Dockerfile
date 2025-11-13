@@ -67,6 +67,7 @@ RUN for repo in \
     https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git \
     https://github.com/bash-j/mikey_nodes.git \
     https://github.com/ltdrdata/ComfyUI-Impact-Pack.git \
+    https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git \
     https://github.com/Fannovel16/comfyui_controlnet_aux.git \
     https://github.com/yolain/ComfyUI-Easy-Use.git \
     https://github.com/kijai/ComfyUI-Florence2.git \
