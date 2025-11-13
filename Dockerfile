@@ -38,7 +38,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install pyyaml gdown triton comfy-cli jupyterlab jupyterlab-lsp \
         jupyter-server jupyter-server-terminals \
-        ipykernel jupyterlab_code_formatter
+        ipykernel jupyterlab_code_formatter \
+        piexif
 
 # ------------------------------------------------------------
 # ComfyUI install
@@ -49,6 +50,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 FROM base AS final
 # Make sure to use the virtual environment here too
 ENV PATH="/opt/venv/bin:$PATH"
+
+# === FIX: Disable torch.compile due to graph break (torch.cuda.device_count) ===
+ENV COMFYUI_DISABLE_TORCH_COMPILE=true
+# ===============================================================================
+
 RUN pip install opencv-python
 
 RUN for repo in \
@@ -64,6 +70,7 @@ RUN for repo in \
     https://github.com/Fannovel16/comfyui_controlnet_aux.git \
     https://github.com/yolain/ComfyUI-Easy-Use.git \
     https://github.com/kijai/ComfyUI-Florence2.git \
+    https://github.com/TinyTerra/ComfyUI_tinyterraNodes.git \
     https://github.com/ShmuelRonen/ComfyUI-LatentSyncWrapper.git \
     https://github.com/WASasquatch/was-node-suite-comfyui.git \
     https://github.com/theUpsider/ComfyUI-Logic.git \
@@ -91,6 +98,9 @@ RUN for repo in \
     https://github.com/vrgamegirl19/comfyui-vrgamedevgirl.git \
     https://github.com/TinyTerra/ComfyUI_tinyterraNodes.git \
     https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git \
+    https://github.com/Pixelailabs/Save_Florence2_Bulk_Prompts.git \
+    https://github.com/ltdrdata/ComfyUI-Inspire-Pack.git \
+    https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \
