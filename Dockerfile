@@ -102,6 +102,7 @@ RUN for repo in \
     https://github.com/Pixelailabs/Save_Florence2_Bulk_Prompts.git \
     https://github.com/ltdrdata/ComfyUI-Inspire-Pack.git \
     https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
+    https://github.com/Hearmeman24/ComfyUI-Translate-Node.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \
