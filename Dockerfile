@@ -107,6 +107,11 @@ RUN for repo in \
     https://github.com/storyicon/comfyui_segment_anything.git \
     https://github.com/djbielejeski/a-person-mask-generator.git \
     https://github.com/Zar4X/ComfyUI-Batch-Process.git \
+    https://github.com/LAOGOU-666/Comfyui_LG_Tools.git \
+    https://github.com/Steudio/ComfyUI_Steudio.git \
+    https://github.com/JPS-GER/ComfyUI_JPS-Nodes.git \
+    https://github.com/M1kep/ComfyLiterals.git \
+    https://github.com/fearnworks/ComfyUI_FearnworksNodes.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
     
