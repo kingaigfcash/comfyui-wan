@@ -112,7 +112,7 @@ RUN for repo in \
     https://github.com/JPS-GER/ComfyUI_JPS-Nodes.git \
     https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git \
     https://github.com/M1kep/ComfyLiterals.git \
-    https://github.com/fearnworks/ComfyUI_FearnworksNodes.git \
+    https://github.com/crystian/ComfyUI-Crystools.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
     
