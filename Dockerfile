@@ -103,8 +103,10 @@ RUN for repo in \
     https://github.com/ltdrdata/ComfyUI-Inspire-Pack.git \
     https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
     https://github.com/Hearmeman24/ComfyUI-Translate-Node.git \
+    https://github.com/kingaigfcash/AIIM-CMDCNTR.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
+    
         cd /ComfyUI/custom_nodes; \
         repo_dir=$(basename "$repo" .git); \
         if [ "$repo" = "https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git" ]; then \
