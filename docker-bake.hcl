@@ -1,9 +1,9 @@
 variable "DOCKERHUB_REPO" {
-  default = "timpietruskyblibla"
+  default = "aiinfluencermethod"
 }
 
 variable "DOCKERHUB_IMG" {
-  default = "runpod-worker-comfy"
+  default = "comfyui_wan"
 }
 
 variable "RELEASE_VERSION" {
