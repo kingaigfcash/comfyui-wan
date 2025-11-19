@@ -104,6 +104,9 @@ RUN for repo in \
     https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
     https://github.com/Hearmeman24/ComfyUI-Translate-Node.git \
     https://github.com/kingaigfcash/AIIM-CMDCNTR.git \
+    https://github.com/storyicon/comfyui_segment_anything.git \
+    https://github.com/djbielejeski/a-person-mask-generator.git \
+    https://github.com/Zar4X/ComfyUI-Batch-Process.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
     
