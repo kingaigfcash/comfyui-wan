@@ -27,6 +27,13 @@ else
     echo "curl is already installed"
 fi
 
+if ! which zip > /dev/null 2>&1; then
+    echo "Installing zip..."
+    apt-get update && apt-get install -y zip
+else
+    echo "zip is already installed"
+fi
+
 # Start SageAttention build in the background
 echo "Starting SageAttention build..."
 (
