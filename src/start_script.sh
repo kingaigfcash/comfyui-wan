@@ -1,3 +1,2 @@
-git clone https://github.com/kingaigfcash/comfyui-wan.git
-mv comfyui-wan/src/start.sh /
+#!/usr/bin/env bash
 bash /start.sh

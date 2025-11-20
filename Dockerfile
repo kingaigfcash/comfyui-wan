@@ -115,7 +115,6 @@ RUN for repo in \
     https://github.com/crystian/ComfyUI-Crystools.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
-    
         cd /ComfyUI/custom_nodes; \
         repo_dir=$(basename "$repo" .git); \
         if [ "$repo" = "https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git" ]; then \
@@ -131,8 +130,10 @@ RUN for repo in \
         fi; \
     done
 
+COPY src/start.sh /start.sh
 COPY src/start_script.sh /start_script.sh
-RUN chmod +x /start_script.sh
+RUN chmod +x /start.sh && chmod +x /start_script.sh
+
 COPY 4xLSDIR.pth /4xLSDIR.pth
 
 CMD ["/start_script.sh"]
