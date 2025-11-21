@@ -401,40 +401,22 @@ echo "All downloads completed!"
 
 echo "Downloading upscale models"
 mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
-if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xLSDIR.pth" ]; then
-    if [ -f "/4xLSDIR.pth" ]; then
-        mv "/4xLSDIR.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xLSDIR.pth"
-        echo "Moved 4xLSDIR.pth to the correct location."
+for f in \
+    "4xLSDIR.pth" \
+    "1xSkinContrast-SuperUltraCompact.pth" \
+    "4xNomosWebPhoto_esrgan.pth" \
+    "2xLiveActionV1_SPAN_490000.pth"; do
+    if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/$f" ]; then
+        if [ -f "/$f" ]; then
+            mv "/$f" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/$f"
+            echo "Moved $f to the correct location."
+        else
+            echo "$f not found in the root directory."
+        fi
     else
-        echo "4xLSDIR.pth not found in the root directory."
+        echo "$f already exists. Skipping."
     fi
-else
-    echo "4xLSDIR.pth already exists. Skipping."
-fi
-
-mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
-if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-SuperUltraCompact.pth" ]; then
-    if [ -f "/1xSkinContrast-SuperUltraCompact.pth" ]; then
-        mv "/1xSkinContrast-SuperUltraCompact.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-SuperUltraCompact.pth"
-        echo "Moved 1xSkinContrast-SuperUltraCompact.pth to the correct location."
-    else
-        echo "1xSkinContrast-SuperUltraCompact.pth not found in the root directory."
-    fi
-else
-    echo "1xSkinContrast-SuperUltraCompact.pth already exists. Skipping."
-fi
-
-mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
-if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth" ]; then
-    if [ -f "/4xNomosWebPhoto_esrgan.pth" ]; then
-        mv "/4xNomosWebPhoto_esrgan.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xNomosWebPhoto_esrgan.pth"
-        echo "Moved 4xNomosWebPhoto_esrgan.pth to the correct location."
-    else
-        echo "4xNomosWebPhoto_esrgan.pth not found in the root directory."
-    fi
-else
-    echo "4xNomosWebPhoto_esrgan.pth already exists. Skipping."
-fi
+done
 
 echo "Finished downloading models!"
 

@@ -141,5 +141,8 @@ COPY src/start_script.sh /start_script.sh
 RUN chmod +x /start.sh && chmod +x /start_script.sh
 
 COPY 4xLSDIR.pth /4xLSDIR.pth
+COPY 1xSkinContrast-SuperUltraCompact.pth /1xSkinContrast-SuperUltraCompact.pth
+COPY 4xNomosWebPhoto_esrgan.pth /4xNomosWebPhoto_esrgan.pth
+COPY 2xLiveActionV1_SPAN_490000.pth /2xLiveActionV1_SPAN_490000.pth
 
 CMD ["/start_script.sh"]
