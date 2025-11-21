@@ -142,9 +142,10 @@ if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanMoEScheduler" ]; then
      cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler
  else
      cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler
-     git fetch --tags
+     if [ -d .git ]; then git fetch --tags; fi
  fi
  if git rev-parse -q --verify "refs/tags/2.0.1" >/dev/null; then git checkout -q "tags/2.0.1"; elif git rev-parse -q --verify "refs/tags/v2.0.1" >/dev/null; then git checkout -q "tags/v2.0.1"; fi
+ if [ -d .git ]; then rm -rf .git; fi
  pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler/requirements.txt
 
 echo "🔧 Installing KJNodes packages..."
@@ -399,6 +400,28 @@ echo "✅ All models downloaded successfully!"
 echo "All downloads completed!"
 
 
+echo "Syncing Flux.1 Dev diffusion model into checkpoints..."
+FLUX_DIFF_SRC="$DIFFUSION_MODELS_DIR/flux1-dev.safetensors"
+FLUX_CHECKPOINT_DIR="$NETWORK_VOLUME/ComfyUI/models/checkpoints"
+if [ -f "$FLUX_DIFF_SRC" ]; then
+    mkdir -p "$FLUX_CHECKPOINT_DIR"
+    cp -f "$FLUX_DIFF_SRC" "$FLUX_CHECKPOINT_DIR/flux1-dev.safetensors"
+    echo "Flux1-Dev checkpoint available at $FLUX_CHECKPOINT_DIR/flux1-dev.safetensors"
+else
+    echo "Flux1-Dev diffusion model not found at $FLUX_DIFF_SRC"
+fi
+
+echo "Preparing Flux.1 Dev VAE file..."
+FLUX_VAE_SRC="$VAE_DIR/ae.safetensors"
+FLUX_VAE_DEST="$VAE_DIR/flux-dev-vae.safetensors"
+if [ -f "$FLUX_VAE_SRC" ]; then
+    cp -f "$FLUX_VAE_SRC" "$FLUX_VAE_DEST"
+    echo "Flux-Dev VAE available as $(basename "$FLUX_VAE_DEST")"
+else
+    echo "Flux-Dev VAE source file not found at $FLUX_VAE_SRC"
+fi
+
+
 echo "Downloading upscale models"
 mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
 for f in \
@@ -565,9 +588,32 @@ if [ -f /tmp/sage_build_done ]; then
     echo "✅ SageAttention build completed successfully!"
 fi
 
-# Start ComfyUI
-
-echo "▶️  Starting ComfyUI"
+  # Start ComfyUI
+  
+  SEEDVR_DIR="$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler"
+  SEEDVR_REPO="https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git"
+  if [ -d "$SEEDVR_DIR" ]; then
+      echo "Pinning ComfyUI-SeedVR2_VideoUpscaler to 2.0.1 before launch..."
+      cd "$SEEDVR_DIR"
+      if [ -d .git ]; then
+          git fetch --tags
+      else
+          git init
+          git remote add origin "$SEEDVR_REPO" 2>/dev/null || git remote set-url origin "$SEEDVR_REPO"
+          git fetch --tags
+      fi
+      if git rev-parse -q --verify "refs/tags/2.0.1" >/dev/null; then
+          git reset --hard "tags/2.0.1"
+      elif git rev-parse -q --verify "refs/tags/v2.0.1" >/dev/null; then
+          git reset --hard "tags/v2.0.1"
+      else
+          echo "2.0.1 tag not found; leaving current version."
+      fi
+      rm -rf .git || true
+      cd - >/dev/null 2>&1
+  fi
+  
+  echo "▶️  Starting ComfyUI"
 
 nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > "$NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log" 2>&1 &
 
