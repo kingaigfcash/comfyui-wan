@@ -122,6 +122,12 @@ RUN for repo in \
         else \
             git clone "$repo"; \
         fi; \
+        if [ "$repo" = "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ]; then \
+            cd "$repo_dir"; \
+            git fetch --tags; \
+            if git rev-parse -q --verify "refs/tags/2.0.1" >/dev/null; then git checkout -q "tags/2.0.1"; elif git rev-parse -q --verify "refs/tags/v2.0.1" >/dev/null; then git checkout -q "tags/v2.0.1"; fi; \
+            cd ..; \
+        fi; \
         if [ -f "/ComfyUI/custom_nodes/$repo_dir/requirements.txt" ]; then \
             pip install -r "/ComfyUI/custom_nodes/$repo_dir/requirements.txt"; \
         fi; \

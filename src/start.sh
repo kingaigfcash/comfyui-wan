@@ -130,16 +130,26 @@ fi
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanMoEScheduler" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/cmeka/ComfyUI-WanMoEScheduler.git
-else
+  else
     echo "Updating WanMoEScheduler"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanMoEScheduler
     git pull
-fi
+  fi
 
+ if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler" ]; then
+     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
+     git clone https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git
+     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler
+ else
+     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler
+     git fetch --tags
+ fi
+ if git rev-parse -q --verify "refs/tags/2.0.1" >/dev/null; then git checkout -q "tags/2.0.1"; elif git rev-parse -q --verify "refs/tags/v2.0.1" >/dev/null; then git checkout -q "tags/v2.0.1"; fi
+ pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-SeedVR2_VideoUpscaler/requirements.txt
 
 echo "🔧 Installing KJNodes packages..."
-pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes/requirements.txt &
-KJ_PID=$!
+  pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes/requirements.txt &
+  KJ_PID=$!
 
 echo "🔧 Installing WanVideoWrapper packages..."
 pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper/requirements.txt &
