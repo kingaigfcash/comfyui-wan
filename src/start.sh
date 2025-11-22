@@ -1,3 +1,9 @@
+export TORCH_CUDA_ARCH_LIST="8.6;8.9;9.0;12.0"
+export CUDAARCHS="86-real;89-real;90-real;120-real"
+export CUDA_FORCE_PTX_JIT=1
+export PYTORCH_NVFUSER_DISABLE_FALLBACK=1
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+
 #!/usr/bin/env bash
 
 # Use libtcmalloc for better memory management
