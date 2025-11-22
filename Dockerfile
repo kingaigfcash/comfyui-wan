@@ -39,7 +39,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install pyyaml gdown triton comfy-cli jupyterlab jupyterlab-lsp \
         jupyter-server jupyter-server-terminals \
         ipykernel jupyterlab_code_formatter \
-        piexif deepdiff py-cpuinfo
+        piexif deepdiff py-cpuinfo comfyui-workflow-templates
 
 # ------------------------------------------------------------
 # ComfyUI install
@@ -50,6 +50,20 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 FROM base AS final
 # Make sure to use the virtual environment here too
 ENV PATH="/opt/venv/bin:$PATH"
+
+# === Universal GPU Architecture Support (Ampere → Blackwell) ===
+ENV TORCH_CUDA_ARCH_LIST="8.6;8.9;9.0;12.0"
+ENV CUDAARCHS="86-real;89-real;90-real;120-real"
+
+# Enable PTX JIT for GPUs torch doesn't have kernels for (Blackwell)
+ENV CUDA_FORCE_PTX_JIT=1
+
+# Disable NVFuser fallback crashes on new architectures
+ENV PYTORCH_NVFUSER_DISABLE_FALLBACK=1
+
+# Better GPU memory allocation for large VRAM (fixes random OOM on 5090/B200)
+ENV PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+# =================================================================
 
 # === FIX: Disable torch.compile due to graph break (torch.cuda.device_count) ===
 ENV COMFYUI_DISABLE_TORCH_COMPILE=true
