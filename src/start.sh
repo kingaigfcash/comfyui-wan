@@ -341,7 +341,7 @@ download_model "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/reso
 download_model "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" "$VAE_DIR/ae.safetensors"
 
 echo "Downloading Flux.1 Dev diffusion model"
-download_model "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors" "$DIFFUSION_MODELS_DIR/flux1-dev.safetensors"
+download_model "https://huggingface.co/zhangxiaosong18/FLUX.1-dev-VAE/resolve/main/vae/diffusion_pytorch_model.safetensors" "$DIFFUSION_MODELS_DIR/flux1-dev.safetensors"
 
 # Download detection models for WanAnimatePreprocess
 echo "Downloading detection models..."
