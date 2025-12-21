@@ -5,12 +5,17 @@ TCMALLOC="$(ldconfig -p | grep -Po "libtcmalloc.so.\d" | head -n 1)"
 export LD_PRELOAD="${TCMALLOC}"
 
 # This is in case there's any special installs or overrides that needs to occur when starting the machine before starting ComfyUI
+# Check multiple locations for additional_params.sh
 if [ -f "/workspace/additional_params.sh" ]; then
     chmod +x /workspace/additional_params.sh
-    echo "Executing additional_params.sh..."
+    echo "Executing additional_params.sh from /workspace..."
     /workspace/additional_params.sh
+elif [ -f "/additional_params.sh" ]; then
+    chmod +x /additional_params.sh
+    echo "Executing additional_params.sh from root..."
+    /additional_params.sh
 else
-    echo "additional_params.sh not found in /workspace. Skipping..."
+    echo "additional_params.sh not found. Skipping..."
 fi
 
 if ! which aria2 > /dev/null 2>&1; then
