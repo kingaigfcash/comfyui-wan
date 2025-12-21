@@ -27,6 +27,13 @@ else
     echo "curl is already installed"
 fi
 
+if ! which exiftool > /dev/null 2>&1; then
+    echo "Installing exiftool..."
+    apt-get update && apt-get install -y libimage-exiftool-perl
+else
+    echo "exiftool is already installed"
+fi
+
 # Utility: install exiftool if missing
 install_exiftool() {
     echo "Checking for exiftool..."
@@ -260,7 +267,7 @@ pip install --no-cache-dir \
   opencv-contrib-python
 
 echo "Installing media/vision helpers..."
-pip install --no-cache-dir groundingdino-py imageio-ffmpeg
+pip install --no-cache-dir groundingdino-py imageio-ffmpeg lpips
 
 echo "Installing attention accelerators (triton + flash-attn)..."
 pip install --no-cache-dir triton

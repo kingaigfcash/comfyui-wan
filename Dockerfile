@@ -106,6 +106,10 @@ RUN for repo in \
         else \
             git clone "$repo"; \
         fi; \
+        if [ "$repo" = "https://github.com/kingaigfcash/AIIM-CMDCNTR.git" ]; then \
+            mv "/ComfyUI/custom_nodes/AIIM-CMDCNTR" "/ComfyUI/custom_nodes/ComfyUI_INSTARAW"; \
+            repo_dir="ComfyUI_INSTARAW"; \
+        fi; \
         if [ -f "/ComfyUI/custom_nodes/$repo_dir/requirements.txt" ]; then \
             pip install -r "/ComfyUI/custom_nodes/$repo_dir/requirements.txt"; \
         fi; \
