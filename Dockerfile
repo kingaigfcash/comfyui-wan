@@ -66,7 +66,6 @@ RUN for repo in \
     https://github.com/Jordach/comfy-plasma.git \
     https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git \
     https://github.com/bash-j/mikey_nodes.git \
-    https://github.com/ltdrdata/ComfyUI-Impact-Pack.git \
     https://github.com/Fannovel16/comfyui_controlnet_aux.git \
     https://github.com/yolain/ComfyUI-Easy-Use.git \
     https://github.com/kijai/ComfyUI-Florence2.git \
@@ -101,6 +100,8 @@ RUN for repo in \
     https://github.com/Pixelailabs/Save_Florence2_Bulk_Prompts.git \
     https://github.com/ltdrdata/ComfyUI-Inspire-Pack.git \
     https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
+    https://github.com/kingaigfcash/AIIM-CMDCNTR.git \
+    https://github.com/ltdrdata/ComfyUI-Impact-Pack.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \

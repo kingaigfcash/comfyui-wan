@@ -68,6 +68,9 @@ else
     echo "Directory already exists, skipping move."
 fi
 
+echo "Updating core ComfyUI requirements..."
+pip install --no-cache-dir -U -r "$COMFYUI_DIR/requirements.txt"
+
 echo "Downloading CivitAI download script to /usr/local/bin"
 git clone "https://github.com/Hearmeman24/CivitAI_Downloader.git" || { echo "Git clone failed"; exit 1; }
 mv CivitAI_Downloader/download_with_aria.py "/usr/local/bin/" || { echo "Move failed"; exit 1; }
@@ -145,6 +148,12 @@ VIBE_PID=$!
 echo "🔧 Installing WanAnimatePreprocess packages..."
 pip install --no-cache-dir -r $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanAnimatePreprocess/requirements.txt &
 WAN_ANIMATE_PID=$!
+
+echo "Installing shared custom-node dependencies..."
+pip install --no-cache-dir \
+  rotary-embedding-torch \
+  deepdiff \
+  opencv-contrib-python
 
 
 export change_preview_method="true"
