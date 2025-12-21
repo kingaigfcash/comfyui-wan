@@ -321,9 +321,9 @@ pip install --no-cache-dir \
 echo "Installing media/vision helpers..."
 pip install --no-cache-dir groundingdino-py imageio-ffmpeg lpips
 
-echo "Installing attention accelerators (triton + flash-attn)..."
+echo "Installing attention accelerators (triton)..."
 pip install --no-cache-dir triton
-MAX_JOBS=${MAX_JOBS:-8} pip install --no-cache-dir --no-build-isolation flash-attn
+# Note: flash-attn removed - causes memory crash during build. SageAttention is used instead.
 
 
 export change_preview_method="true"
