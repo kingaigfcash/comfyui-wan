@@ -184,32 +184,55 @@ fi
 echo "Updating core ComfyUI requirements..."
 pip install --no-cache-dir -U -r "$COMFYUI_DIR/requirements.txt"
 
-# Detect GPU compute capability and install appropriate PyTorch
+# Detect GPU compute capability using nvidia-smi (more reliable)
 echo "Detecting GPU architecture..."
-GPU_ARCH=$(python3 -c "import torch; print(torch.cuda.get_device_capability()[0] * 10 + torch.cuda.get_device_capability()[1])" 2>/dev/null || echo "0")
+GPU_ARCH=0
+
+if command -v nvidia-smi > /dev/null 2>&1; then
+    GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -n1)
+    echo "Detected GPU: $GPU_NAME"
+    
+    case "$GPU_NAME" in
+        *"5090"*|*"5080"*|*"5070"*|*"Blackwell"*|*"PRO 6000"*"Blackwell"*)
+            GPU_ARCH=120
+            ;;
+        *"4090"*|*"4080"*|*"4070"*|*"L40"*|*"RTX 6000"*"Ada"*|*"Ada"*)
+            GPU_ARCH=89
+            ;;
+        *"H100"*|*"H200"*)
+            GPU_ARCH=90
+            ;;
+        *"A100"*|*"A10"*|*"3090"*|*"3080"*|*"3070"*)
+            GPU_ARCH=80
+            ;;
+        *)
+            GPU_ARCH=$(python3 -c "import torch; print(torch.cuda.get_device_capability()[0] * 10 + torch.cuda.get_device_capability()[1])" 2>/dev/null || echo "0")
+            ;;
+    esac
+fi
+
+if [ "$GPU_ARCH" -eq 0 ]; then
+    GPU_ARCH=$(python3 -c "import torch; print(torch.cuda.get_device_capability()[0] * 10 + torch.cuda.get_device_capability()[1])" 2>/dev/null || echo "0")
+fi
+
 echo "Detected GPU compute capability: SM $GPU_ARCH"
 
+# Install appropriate PyTorch - use cu128 nightly for all modern GPUs (SM 80+)
 if [ "$GPU_ARCH" -ge 120 ]; then
-    # Blackwell (RTX 5090, RTX 6000 Blackwell) - SM 12.0+
     echo "Blackwell GPU detected (SM 120+). Installing PyTorch nightly with CUDA 12.8..."
     pip install --no-cache-dir --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
-elif [ "$GPU_ARCH" -ge 89 ]; then
-    # Ada Lovelace (RTX 4090, L40S, RTX 6000 Ada) - SM 8.9
-    # Hopper (H100) - SM 9.0
-    echo "Ada/Hopper GPU detected (SM 89-90). Using stable PyTorch with CUDA 12.4..."
-    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 elif [ "$GPU_ARCH" -ge 80 ]; then
-    # Ampere (A100, RTX 3090) - SM 8.0
-    echo "Ampere GPU detected (SM 80+). Using stable PyTorch with CUDA 12.4..."
-    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+    echo "Modern GPU detected (SM 80+). Installing PyTorch nightly with CUDA 12.8..."
+    pip install --no-cache-dir --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 else
-    # Fallback for older or undetected GPUs
-    echo "GPU architecture not detected or older GPU. Using stable PyTorch with CUDA 12.4..."
+    echo "Older/undetected GPU. Using stable PyTorch with CUDA 12.4..."
     pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 fi
 
 echo "PyTorch installation complete. Verifying..."
 python3 -c "import torch; print(f'PyTorch {torch.__version__} | CUDA {torch.version.cuda} | GPU: {torch.cuda.get_device_name(0)}')"
+echo "Supported CUDA architectures:"
+python3 -c "import torch; print(torch.cuda.get_arch_list())"
 
 echo "Downloading CivitAI download script to /usr/local/bin"
 git clone "https://github.com/Hearmeman24/CivitAI_Downloader.git" || { echo "Git clone failed"; exit 1; }
