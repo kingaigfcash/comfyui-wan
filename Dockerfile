@@ -78,7 +78,7 @@ RUN for repo in \
     https://github.com/chflame163/ComfyUI_LayerStyle.git \
     https://github.com/chrisgoringe/cg-use-everywhere.git \
     https://github.com/kijai/ComfyUI-segment-anything-2.git \
-    https://github.com/ClownsharkBatwing/RES4LYF \
+    https://github.com/ClownsharkBatwing/RES4LYF.git \
     https://github.com/welltop-cn/ComfyUI-TeaCache.git \
     https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git \
     https://github.com/Jonseed/ComfyUI-Detail-Daemon.git \
@@ -89,13 +89,8 @@ RUN for repo in \
     https://github.com/M1kep/ComfyLiterals.git \
     https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch.git \
     https://github.com/digitaljohn/comfyui-propost.git \
-    https://github.com/yolain/ComfyUI-Easy-Use.git \
-    https://github.com/cubiq/ComfyUI_essentials.git \
-    https://github.com/chrisgoringe/cg-use-everywhere.git \
-    https://github.com/ClownsharkBatwing/RES4LYF.git \
     https://github.com/sipherxyz/comfyui-art-venture.git \
     https://github.com/vrgamegirl19/comfyui-vrgamedevgirl.git \
-    https://github.com/TinyTerra/ComfyUI_tinyterraNodes.git \
     https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git \
     https://github.com/Pixelailabs/Save_Florence2_Bulk_Prompts.git \
     https://github.com/ltdrdata/ComfyUI-Inspire-Pack.git \

@@ -27,6 +27,107 @@ else
     echo "curl is already installed"
 fi
 
+# Utility: install exiftool if missing
+install_exiftool() {
+    echo "Checking for exiftool..."
+    if command -v exiftool > /dev/null 2>&1; then
+        echo "[SKIP] exiftool is already installed."
+        return 0
+    fi
+
+    if command -v apt-get > /dev/null 2>&1; then
+        echo "Installing exiftool via apt..."
+        apt-get update -qq && apt-get install -y libimage-exiftool-perl -qq || \
+            echo "[WARNING] Failed to install exiftool via apt. Please install manually if needed."
+    elif command -v yum > /dev/null 2>&1; then
+        echo "Installing exiftool via yum..."
+        yum install -y perl-Image-ExifTool -q || \
+            echo "[WARNING] Failed to install exiftool via yum. Please install manually if needed."
+    elif command -v pacman > /dev/null 2>&1; then
+        echo "Installing exiftool via pacman..."
+        pacman -S --noconfirm perl-image-exiftool || \
+            echo "[WARNING] Failed to install exiftool via pacman. Please install manually if needed."
+    else
+        echo "[WARNING] Could not detect package manager. Please install exiftool manually."
+    fi
+}
+
+# Utility: refresh comfyui_controlnet_aux for INSTARAW workflow
+setup_controlnet_aux() {
+    local python_cmd="$1"
+    local custom_nodes_path="$NETWORK_VOLUME/ComfyUI/custom_nodes"
+    local controlnet_dir="$custom_nodes_path/comfyui_controlnet_aux"
+    local repo_url="https://github.com/Fannovel16/comfyui_controlnet_aux.git"
+
+    mkdir -p "$custom_nodes_path"
+
+    if [ -d "$controlnet_dir" ]; then
+        echo "[INSTARAW] Removing existing comfyui_controlnet_aux directory..."
+        rm -rf "$controlnet_dir"
+    fi
+
+    echo "[INSTARAW] Cloning comfyui_controlnet_aux repository..."
+    if git clone "$repo_url" "$controlnet_dir"; then
+        echo "[INSTARAW] Installing comfyui_controlnet_aux requirements..."
+        "$python_cmd" -m pip install -r "$controlnet_dir/requirements.txt" --no-warn-script-location || \
+            echo "[WARNING] Failed to install comfyui_controlnet_aux requirements."
+    else
+        echo "[ERROR] Failed to clone comfyui_controlnet_aux repository."
+    fi
+}
+
+# Main INSTARAW orchestrator
+run_instaraw_downloader() {
+    local instaraw_root="$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI_INSTARAW"
+    local downloader_dir="$instaraw_root/downloader_scripts/linux"
+    local engine_path="$downloader_dir/INSTARAW_download_engine.py"
+    local models_file="$downloader_dir/INSTARAW_models_to_download.txt"
+
+    if [ ! -f "$engine_path" ] || [ ! -f "$models_file" ]; then
+        echo "[INSTARAW] Downloader scripts not found at $downloader_dir. Skipping INSTARAW workflow."
+        return 0
+    fi
+
+    local python_cmd=""
+    if command -v python3 > /dev/null 2>&1; then
+        python_cmd="python3"
+    elif command -v python > /dev/null 2>&1; then
+        python_cmd="python"
+    else
+        echo "[INSTARAW] Python not found in PATH. Skipping INSTARAW workflow."
+        return 0
+    fi
+
+    echo "[INSTARAW] Using Python: $python_cmd"
+    echo "[INSTARAW] Ensuring required Python libraries are installed..."
+    if ! "$python_cmd" -m pip install --upgrade pip requests tqdm --no-warn-script-location; then
+        echo "[INSTARAW] Failed to install Python dependencies. Skipping INSTARAW workflow."
+        return 0
+    fi
+
+    install_exiftool
+    setup_controlnet_aux "$python_cmd"
+
+    if [ -f "$instaraw_root/requirements.txt" ]; then
+        echo "[INSTARAW] Installing ComfyUI_INSTARAW dependencies..."
+        "$python_cmd" -m pip install -r "$instaraw_root/requirements.txt" --no-warn-script-location || \
+            echo "[WARNING] Failed to install some ComfyUI_INSTARAW dependencies."
+    else
+        echo "[INSTARAW] ComfyUI_INSTARAW requirements.txt not found. Continuing."
+    fi
+
+    echo "======================================================"
+    echo " [INSTARAW] Downloading models listed in:"
+    echo "    $models_file"
+    echo "======================================================"
+
+    (cd "$downloader_dir" && "$python_cmd" "$engine_path")
+
+    echo "======================================================"
+    echo " [INSTARAW] Download process finished!"
+    echo "======================================================"
+}
+
 # Start SageAttention build in the background
 echo "Starting SageAttention build..."
 (
@@ -70,6 +171,9 @@ fi
 
 echo "Updating core ComfyUI requirements..."
 pip install --no-cache-dir -U -r "$COMFYUI_DIR/requirements.txt"
+
+echo "Installing/upgrading core torch stack (nightly CUDA 12.8)..."
+pip install --no-cache-dir --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
 echo "Downloading CivitAI download script to /usr/local/bin"
 git clone "https://github.com/Hearmeman24/CivitAI_Downloader.git" || { echo "Git clone failed"; exit 1; }
@@ -154,6 +258,13 @@ pip install --no-cache-dir \
   rotary-embedding-torch \
   deepdiff \
   opencv-contrib-python
+
+echo "Installing media/vision helpers..."
+pip install --no-cache-dir groundingdino-py imageio-ffmpeg
+
+echo "Installing attention accelerators (triton + flash-attn)..."
+pip install --no-cache-dir triton
+MAX_JOBS=${MAX_JOBS:-8} pip install --no-cache-dir --no-build-isolation flash-attn
 
 
 export change_preview_method="true"
@@ -395,17 +506,14 @@ fi
 
 echo "Finished downloading models!"
 
+run_instaraw_downloader
+
 
 echo "Checking and copying workflow..."
 mkdir -p "$WORKFLOW_DIR"
 
 # Ensure the file exists in the current directory before moving it
 cd /
-
-SOURCE_DIR="/comfyui-wan/workflows"
-
-# Ensure destination directory exists
-mkdir -p "$WORKFLOW_DIR"
 
 SOURCE_DIR="/comfyui-wan/workflows"
 
@@ -477,7 +585,7 @@ echo "cd $NETWORK_VOLUME" >> ~/.bashrc
 
 # Install dependencies
 wait $KJ_PID
-  KJ_STATUS=$?
+KJ_STATUS=$?
 
 wait $WAN_PID
 WAN_STATUS=$?
@@ -517,6 +625,7 @@ fi
 echo "Renaming loras downloaded as zip files to safetensors files"
 cd $LORAS_DIR
 for file in *.zip; do
+    [ -e "$file" ] || continue
     mv "$file" "${file%.zip}.safetensors"
 done
 
@@ -541,40 +650,38 @@ if [ -f /tmp/sage_build_done ]; then
 fi
 
 # Start ComfyUI
-
 echo "▶️  Starting ComfyUI"
 
 nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > "$NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log" 2>&1 &
 
-    # Counter for timeout
-    counter=0
-    max_wait=45
+# Counter for timeout
+counter=0
+max_wait=45
 
-    until curl --silent --fail "$URL" --output /dev/null; do
-        if [ $counter -ge $max_wait ]; then
-            echo "⚠️  ComfyUI should be up by now. If it's not running, there's probably an error."
-            echo ""
-            echo "🛠️  Troubleshooting Tips:"
-            echo "1. Make sure that your CUDA Version is set to 12.8/12.9 by selecting that in the additional filters tab before deploying the template"
-            echo "2. If you are deploying using network storage, try deploying without it"
-            echo "3. If you are using a B200 GPU, it is currently not supported"
-            echo "4. If all else fails, open the web terminal by clicking \"connect\", \"enable web terminal\" and running:"
-            echo "   cat comfyui_${RUNPOD_POD_ID}_nohup.log"
-            echo "   This should show a ComfyUI error. Please paste the error in HearmemanAI Discord Server for assistance."
-            echo ""
-            echo "📋 Startup logs location: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
-            break
-        fi
-
-        echo "🔄  ComfyUI Starting Up... You can view the startup logs here: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
-        sleep 2
-        counter=$((counter + 2))
-    done
-
-    # Only show success message if curl succeeded
-    if curl --silent --fail "$URL" --output /dev/null; then
-        echo "🚀 ComfyUI is UP"
+until curl --silent --fail "$URL" --output /dev/null; do
+    if [ $counter -ge $max_wait ]; then
+        echo "⚠️  ComfyUI should be up by now. If it's not running, there's probably an error."
+        echo ""
+        echo "🛠️  Troubleshooting Tips:"
+        echo "1. Make sure that your CUDA Version is set to 12.8/12.9 by selecting that in the additional filters tab before deploying the template"
+        echo "2. If you are deploying using network storage, try deploying without it"
+        echo "3. If you are using a B200 GPU, it is currently not supported"
+        echo "4. If all else fails, open the web terminal by clicking \"connect\", \"enable web terminal\" and running:"
+        echo "   cat comfyui_${RUNPOD_POD_ID}_nohup.log"
+        echo "   This should show a ComfyUI error. Please paste the error in HearmemanAI Discord Server for assistance."
+        echo ""
+        echo "📋 Startup logs location: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
+        break
     fi
 
-    sleep infinity
+    echo "🔄  ComfyUI Starting Up... You can view the startup logs here: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
+    sleep 2
+    counter=$((counter + 2))
+done
+
+# Only show success message if curl succeeded
+if curl --silent --fail "$URL" --output /dev/null; then
+    echo "🚀 ComfyUI is UP"
 fi
+
+sleep infinity
