@@ -98,6 +98,10 @@ RUN for repo in \
     https://github.com/EvilBT/ComfyUI_SLK_joy_caption_two.git \
     https://github.com/kingaigfcash/AIIM-CMDCNTR.git \
     https://github.com/ltdrdata/ComfyUI-Impact-Pack.git \
+    https://github.com/LAOGOU-666/Comfyui_LG_Tools.git \
+    https://github.com/Steudio/ComfyUI_Steudio.git \
+    https://github.com/Zar4X/ComfyUI-Batch-Process.git \
+    https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \
@@ -122,5 +126,7 @@ RUN for repo in \
 COPY src/start_script.sh /start_script.sh
 RUN chmod +x /start_script.sh
 COPY 4xLSDIR.pth /4xLSDIR.pth
+COPY 1xSkinContrast-High-SuperUltraCompact.pth /1xSkinContrast-High-SuperUltraCompact.pth
+COPY 8xNMKDFaces160000G_v10.pt /8xNMKDFaces160000G_v10.pt
 
 CMD ["/start_script.sh"]

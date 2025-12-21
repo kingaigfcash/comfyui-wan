@@ -493,6 +493,14 @@ download_model "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_
 
 download_model "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors" "$VAE_DIR/wan_2.1_vae.safetensors"
 
+# Download Flux Dev VAE (public mirror - Black Forest Labs HF repo is gated)
+echo "Downloading Flux Dev VAE..."
+download_model "https://huggingface.co/zhangxiaosong18/FLUX.1-dev-VAE/resolve/main/vae/diffusion_pytorch_model.safetensors" "$VAE_DIR/flux_dev_vae.safetensors"
+
+# Download Flux Dev FP8 model
+echo "Downloading Flux Dev FP8 model..."
+download_model "https://huggingface.co/Kijai/flux-fp8/resolve/main/flux1-dev-fp8-e4m3fn.safetensors" "$DIFFUSION_MODELS_DIR/flux1-dev-fp8-e4m3fn.safetensors"
+
 # Download detection models for WanAnimatePreprocess
 echo "Downloading detection models..."
 mkdir -p "$DETECTION_DIR"
@@ -550,8 +558,10 @@ echo "✅ All models downloaded successfully!"
 echo "All downloads completed!"
 
 
-echo "Downloading upscale models"
+echo "Moving upscale models"
 mkdir -p "$NETWORK_VOLUME/ComfyUI/models/upscale_models"
+
+# Move 4xLSDIR.pth
 if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xLSDIR.pth" ]; then
     if [ -f "/4xLSDIR.pth" ]; then
         mv "/4xLSDIR.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xLSDIR.pth"
@@ -561,6 +571,30 @@ if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/4xLSDIR.pth" ]; then
     fi
 else
     echo "4xLSDIR.pth already exists. Skipping."
+fi
+
+# Move 1xSkinContrast-High-SuperUltraCompact.pth
+if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-High-SuperUltraCompact.pth" ]; then
+    if [ -f "/1xSkinContrast-High-SuperUltraCompact.pth" ]; then
+        mv "/1xSkinContrast-High-SuperUltraCompact.pth" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/1xSkinContrast-High-SuperUltraCompact.pth"
+        echo "Moved 1xSkinContrast-High-SuperUltraCompact.pth to the correct location."
+    else
+        echo "1xSkinContrast-High-SuperUltraCompact.pth not found in the root directory."
+    fi
+else
+    echo "1xSkinContrast-High-SuperUltraCompact.pth already exists. Skipping."
+fi
+
+# Move 8xNMKDFaces160000G_v10.pt
+if [ ! -f "$NETWORK_VOLUME/ComfyUI/models/upscale_models/8xNMKDFaces160000G_v10.pt" ]; then
+    if [ -f "/8xNMKDFaces160000G_v10.pt" ]; then
+        mv "/8xNMKDFaces160000G_v10.pt" "$NETWORK_VOLUME/ComfyUI/models/upscale_models/8xNMKDFaces160000G_v10.pt"
+        echo "Moved 8xNMKDFaces160000G_v10.pt to the correct location."
+    else
+        echo "8xNMKDFaces160000G_v10.pt not found in the root directory."
+    fi
+else
+    echo "8xNMKDFaces160000G_v10.pt already exists. Skipping."
 fi
 
 echo "Finished downloading models!"
