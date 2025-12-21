@@ -102,6 +102,9 @@ RUN for repo in \
     https://github.com/Steudio/ComfyUI_Steudio.git \
     https://github.com/Zar4X/ComfyUI-Batch-Process.git \
     https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git \
+    https://github.com/storyicon/comfyui_segment_anything.git \
+    https://github.com/djbielejeski/a-person-mask-generator.git \
+    https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git \
     https://github.com/pamparamm/sd-perturbed-attention.git; \
     do \
         cd /ComfyUI/custom_nodes; \
