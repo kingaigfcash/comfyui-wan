@@ -26,9 +26,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Use the virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Install PyTorch with broad GPU support (A100 SM80, L40S SM89, H100 SM90, RTX6000 Ada SM89)
+# For Blackwell (RTX 5090 SM120), runtime rebuild is handled in start.sh
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --pre torch torchvision torchaudio \
-        --index-url https://download.pytorch.org/whl/nightly/cu128
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
 # Core Python tooling
 RUN --mount=type=cache,target=/root/.cache/pip \
